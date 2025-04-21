@@ -1,5 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- The full HTML content goes here -->
-<!-- Snipped due to length but would include the entire code you pasted -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Mirror | AI Soul Reflection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-dark: #0f172a;
+            --primary-light: #f8fafc;
+            --accent-purple: #7e22ce;
+            --accent-teal: #0d9488;
+            --accent-pink: #db2777;
+        }
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--primary-light);
+            min-height: 100vh;
+        }
+        
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .blur-bg {
+            backdrop-filter: blur(10px);
+            background-color: rgba(15, 23, 42, 0.7);
+        }
+        
+        .song-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(126, 34, 206, 0.1), rgba(15, 23, 42, 0.7));
+        }
+        
+        .song-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(126, 34, 206, 0.4);
+        }
+        
+        .chat-bubble-ai {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.2), rgba(15, 23, 42, 0.7));
+            border-radius: 1.5rem 1.5rem 1.5rem 0;
+        }
+        
+        .chat-bubble-user {
+            background: linear-gradient(135deg, rgba(126, 34, 206, 0.2), rgba(15, 23, 42, 0.7));
+            border-radius: 1.5rem 1.5rem 0 1.5rem;
+        }
+        
+        .upload-dropzone {
+            border: 2px dashed rgba(248, 250, 252, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-dropzone.active {
+            border-color: #8b5cf6;
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+        
+        .framework-card {
+            background: linear-gradient(135deg, rgba(219, 39, 119, 0.1), rgba(15, 23, 42, 0.7));
+            border-left: 4px solid #db2777;
+        }
+        
+        .surrender-mode {
+            background: radial-gradient(circle at center, rgba(13, 148, 136, 0.1) 0%, rgba(15, 23, 42, 0.9) 70%);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="blur-bg border-b border-gray-800 fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl font-bold gradient-text">Music Mirror</span>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#home" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Home</a>
+                            <a href="#upload" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Upload</a>
+                            <a href="#chat" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Chat</a>
+                            <a href="#insights" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700">Insights</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
+                            <i class="fas fa-cog text-lg"></i>
+                        </button>
+                        <button id="surrender-btn" class="ml-3 px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-teal-500 to-purple-600 text-white hover:from-teal-600 hover:to-purple-700">
+                            Surrender Mode
+                        </button>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Home</a>
+                <a href="#upload" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Upload</a>
+                <a href="#chat" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Chat</a>
+                <a href="#insights" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Insights</a>
+                <button id="mobile-surrender-btn" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium bg-gradient-to-r from-teal-500 to-purple-600 text-white">
+                    Surrender Mode
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-16">
+        <!-- Home Section -->
+        <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-gray-900"></div>
+                <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'); background-size: cover; background-position: center;"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-20">
+                <h1 class="title-font text-5xl md:text-6xl font-bold mb-6">
+                    <span class="gradient-text">Music Mirror</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                    This isn't a music site. It's a memory mirror for your soul's sound.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#upload" class="px-8 py-4 rounded-full text-lg font-medium bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg">
+                        Start Reflecting
+                    </a>
+                    <button class="px-8 py-4 rounded-full text-lg font-medium border-2 border-gray-600 text-gray-300 hover:border-white hover:text-white transition-all">
+                        How It Works
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section id="upload" class="min-h-screen py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="title-font text-4xl font-bold mb-4">Offer Your Sound</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Upload your song and let the mirror reflect what you're really carrying.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <div id="dropzone" class="upload-dropzone rounded-xl p-8 mb-6 flex flex-col items-center justify-center h-64 cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-purple-500 mb-4"></i>
+                        <p class="text-lg text-gray-300 mb-2">Drag & drop your song here</p>
+                        <p class="text-sm text-gray-500">or click to browse files</p>
+                        <input type="file" id="file-upload" class="hidden" accept="audio/*">
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <h3 class="text-xl font-medium mb-4">Or paste a YouTube link</h3>
+                        <div class="flex">
+                            <input type="text" placeholder="https://youtube.com/watch?v=..." class="flex-grow px-4 py-3 rounded-l-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <button class="px-6 py-3 rounded-r-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-xl font-medium mb-4">Song Details</h3>
+                    <form id="song-form">
+                        <div class="mb-4">
+                            <label class="block text-gray-400 mb-2">Title</label>
+                            <input type="text" class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-400 mb-2">BPM</label>
+                                <input type="number" class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 mb-2">Key</label>
+                                <select class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="">Select key</option>
+                                    <option value="C">C</option>
+                                    <option value="C#">C#</option>
+                                    <option value="D">D</option>
+                                    <!-- More options -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-400 mb-2">Mood</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300 hover:bg-purple-600 hover:text-white">Melancholic</button>
+                                <button type="button" class="px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300 hover:bg-purple-600 hover:text-white">Energetic</button>
+                                <button type="button" class="px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300 hover:bg-purple-600 hover:text-white">Reflective</button>
+                                <button type="button" class="px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300 hover:bg-purple-600 hover:text-white">Angry</button>
+                                <button type="button" class="px-3 py-1 rounded-full text-sm bg-gray-700 text-gray-300 hover:bg-purple-600 hover:text-white">Joyful</button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-400 mb-2">Context (optional)</label>
+                            <textarea class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" rows="3" placeholder="Wrote this after a breakup... Post-prayer freestyle... etc."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-colors font-medium">
+                            Submit to the Mirror
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="min-h-screen py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="title-font text-4xl font-bold mb-4">Conversation with Your Sound</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Ask the mirror anything about your musical journey and inner patterns.
+                </p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-xl">
+                <div class="p-4 border-b border-gray-700 bg-gray-900 flex items-center">
+                    <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500 mr-4"></div>
+                    <div class="text-sm text-gray-400">Music Mirror AI</div>
+                </div>
+                
+                <div id="chat-container" class="h-96 overflow-y-auto p-4 space-y-4">
+                    <div class="chat-bubble-ai p-4 max-w-3xl">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-teal-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-teal-400 mb-1">Music Mirror</p>
+                                <p class="text-gray-200">Hello. I'm here to reflect your musical soul back to you. What would you like to explore today?</p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <button class="suggestion-btn px-3 py-1 text-xs rounded-full bg-gray-700 text-gray-300 hover:bg-teal-600 hover:text-white">What's my dominant emotional pattern?</button>
+                                    <button class="suggestion-btn px-3 py-1 text-xs rounded-full bg-gray-700 text-gray-300 hover:bg-teal-600 hover:text-white">Compare my last 3 tracks to my first ones</button>
+                                    <button class="suggestion-btn px-3 py-1 text-xs rounded-full bg-gray-700 text-gray-300 hover:bg-teal-600 hover:text-white">What's my most grounded song?</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-gray-700 bg-gray-900">
+                    <div class="flex">
+                        <input type="text" id="chat-input" placeholder="Ask the mirror anything..." class="flex-grow px-4 py-3 rounded-l-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <button id="send-btn" class="px-6 py-3 rounded-r-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Insights Section -->
+        <section id="insights" class="min-h-screen py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="title-font text-4xl font-bold mb-4">Map of Your Music Soul</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Discover the hidden frameworks and archetypes in your creative expression.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-purple-500/20 text-purple-400 mr-4">
+                            <i class="fas fa-brain text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-medium">Emergent Themes</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-pink-400">Messiah Complex Escapes</p>
+                            <p class="text-sm text-gray-400">5 songs</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-pink-400">Vulnerability in Minor Keys</p>
+                            <p class="text-sm text-gray-400">8 songs</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-pink-400">Father Wound Bridges</p>
+                            <p class="text-sm text-gray-400">3 songs</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-teal-500/20 text-teal-400 mr-4">
+                            <i class="fas fa-redo text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-medium">Loops Detected</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-purple-400">Self-Blame Cycle in High BPM</p>
+                            <p class="text-sm text-gray-400">6 songs, 142-156 BPM</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-purple-400">Post-Argument Processing</p>
+                            <p class="text-sm text-gray-400">4 songs, all in D minor</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-pink-500/20 text-pink-400 mr-4">
+                            <i class="fas fa-wave-square text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-medium">Shifts Over Time</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-teal-400">Externalized Conflict → Internal Inquiry</p>
+                            <p class="text-sm text-gray-400">2021 → 2023</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 cursor-pointer">
+                            <p class="font-medium text-teal-400">Lyric Density Decreasing</p>
+                            <p class="text-sm text-gray-400">From 4.2 to 2.8 words/bar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-2xl font-medium mb-6">Framework Deep Dive</h3>
+                
+                <div class="framework-card rounded-xl p-6 mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold mb-1">Christ Trap Flow Breakers</h4>
+                            <p class="text-gray-400 italic">"Songs that subvert worship-energy with raw honesty"</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="p-2 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="p-2 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-gray-300 mb-3">This framework emerged from your tendency to use sacred music structures while expressing deeply human struggles. The tension creates a unique emotional signature.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full text-xs bg-pink-900/50 text-pink-300">guru fatigue</span>
+                            <span class="px-3 py-1 rounded-full text-xs bg-pink-900/50 text-pink-300">mirror deflection</span>
+                            <span class="px-3 py-1 rounded-full text-xs bg-pink-900/50 text-pink-300">sacred profane</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-medium text-gray-400 mb-2">Example Tracks</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="song-card p-4 rounded-lg cursor-pointer">
+                                <p class="font-medium">Messiah in Reverb</p>
+                                <p class="text-sm text-gray-400">June 2022 • 92 BPM • E minor</p>
+                            </div>
+                            <div class="song-card p-4 rounded-lg cursor-pointer">
+                                <p class="font-medium">Too Human</p>
+                                <p class="text-sm text-gray-400">Nov 2022 • 88 BPM • G major</p>
+                            </div>
+                            <div class="song-card p-4 rounded-lg cursor-pointer">
+                                <p class="font-medium">Altar Call Response</p>
+                                <p class="text-sm text-gray-400">March 2023 • 102 BPM • A minor</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button class="px-6 py-3 rounded-lg border-2 border-gray-600 text-gray-300 hover:border-white hover:text-white transition-all flex items-center mx-auto">
+                        <i class="fas fa-plus mr-2"></i> Add Personal Reflection to This Framework
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Surrender Mode Modal -->
+        <div id="surrender-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+            <div class="surrender-mode relative rounded-2xl max-w-md w-full p-8 text-center">
+                <button id="close-surrender" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                
+                <div class="mb-8">
+                    <i class="fas fa-moon text-4xl text-teal-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-2">Surrender Mode</h3>
+                    <p class="text-gray-300">Let go of analysis. Just be with your sound.</p>
+                </div>
+                
+                <div id="surrender-question" class="mb-8">
+                    <p class="text-xl text-teal-300 mb-6 pulse-animation">Which song made you feel most seen?</p>
+                    <select class="w-full px-4 py-3 rounded-lg bg-gray-700/70 text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">Select a song...</option>
+                        <option value="1">Messiah in Reverb</option>
+                        <option value="2">Too Human</option>
+                        <option value="3">Altar Call Response</option>
+                        <option value="4">Father's Hands</option>
+                    </select>
+                </div>
+                
+                <div id="surrender-response" class="hidden">
+                    <p class="text-lg text-gray-300 mb-6">"That was your first moment of embodiment. Everything else flowed from there."</p>
+                    <button class="px-6 py-3 rounded-lg bg-teal-600/30 border border-teal-500 text-teal-300 hover:bg-teal-600/50 transition-colors">
+                        Sit With This
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Music Mirror</h3>
+                    <p class="text-gray-400">A memory mirror for your soul's sound.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Explore</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Upload</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Chat</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Insights</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">API</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+                <p>© 2023 Music Mirror. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // File upload dropzone
+        const dropzone = document.getElementById('dropzone');
+        const fileUpload = document.getElementById('file-upload');
+
+        dropzone.addEventListener('click', () => fileUpload.click());
+
+        fileUpload.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                dropzone.classList.add('active');
+                dropzone.innerHTML = `
+                    <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+                    <p class="text-lg text-gray-300 mb-2">${e.target.files[0].name}</p>
+                    <p class="text-sm text-gray-500">Ready to upload</p>
+                `;
+            }
+        });
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropzone.classList.add('active');
+        }
+
+        function unhighlight() {
+            dropzone.classList.remove('active');
+        }
+
+        dropzone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileUpload.files = files;
+            
+            if (files.length) {
+                dropzone.innerHTML = `
+                    <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+                    <p class="text-lg text-gray-300 mb-2">${files[0].name}</p>
+                    <p class="text-sm text-gray-500">Ready to upload</p>
+                `;
+            }
+        }
+
+        // Chat functionality
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatContainer = document.getElementById('chat-container');
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message) {
+                // Add user message
+                const userBubble = document.createElement('div');
+                userBubble.className = 'chat-bubble-user p-4 max-w-3xl ml-auto';
+                userBubble.innerHTML = `
+                    <div class="flex items-start justify-end">
+                        <div>
+                            <p class="font-medium text-purple-400 mb-1 text-right">You</p>
+                            <p class="text-gray-200 text-right">${message}</p>
+                        </div>
+                        <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-500 flex items-center justify-center ml-3">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                    </div>
+                `;
+                chatContainer.appendChild(userBubble);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                // Simulate AI response after a delay
+                setTimeout(() => {
+                    const aiBubble = document.createElement('div');
+                    aiBubble.className = 'chat-bubble-ai p-4 max-w-3xl';
+                    aiBubble.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-teal-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-teal-400 mb-1">Music Mirror</p>
+                                <p class="text-gray-200">Your recent tracks reflect a shift from "defensive defiance" to "curious surrender." Especially noticeable in your BPM and lyric density.</p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <button class="suggestion-btn px-3 py-1 text-xs rounded-full bg-gray-700 text-gray-300 hover:bg-teal-600 hover:text-white">Show me examples</button>
+                                    <button class="suggestion-btn px-3 py-1 text-xs rounded-full bg-gray-700 text-gray-300 hover:bg-teal-600 hover:text-white">What caused this shift?</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    chatContainer.appendChild(aiBubble);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Suggestion buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('suggestion-btn')) {
+                chatInput.value = e.target.textContent;
+                chatInput.focus();
+            }
+        });
+
+        // Surrender mode
+        const surrenderBtn = document.getElementById('surrender-btn');
+        const mobileSurrenderBtn = document.getElementById('mobile-surrender-btn');
+        const surrenderModal = document.getElementById('surrender-modal');
+        const closeSurrender = document.getElementById('close-surrender');
+        const surrenderQuestion = document.getElementById('surrender-question');
+        const surrenderResponse = document.getElementById('surrender-response');
+
+        function toggleSurrenderModal() {
+            surrenderModal.classList.toggle('hidden');
+            surrenderQuestion.classList.remove('hidden');
+            surrenderResponse.classList.add('hidden');
+        }
+
+        surrenderBtn.addEventListener('click', toggleSurrenderModal);
+        mobileSurrenderBtn.addEventListener('click', toggleSurrenderModal);
+        closeSurrender.addEventListener('click', toggleSurrenderModal);
+
+        // Simulate surrender mode response
+        surrenderQuestion.addEventListener('change', (e) => {
+            if (e.target.value) {
+                surrenderQuestion.classList.add('hidden');
+                surrenderResponse.classList.remove('hidden');
+            }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!document.getElementById('mobile-menu').classList.contains('hidden')) {
+                        document.getElementById('mobile-menu').classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
 </html>
